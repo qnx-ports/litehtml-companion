@@ -1,0 +1,52 @@
+# Alpine-Contributor: Grigory Kirillov <txgk@bk.ru>
+# Alpine-Maintainer: Celeste <cielesti@protonmail.com>
+# Maintainer: Felix Xing <fxing@qnx.com>
+pkgname=litehtml
+pkgver=0.9
+pkgrel=0
+pkgdesc="Fast and lightweight HTML/CSS rendering engine"
+url="http://www.litehtml.com/"
+arch="all"
+license="BSD-3-Clause"
+depends="libc++ gumbo-parser"
+makedepends="cmake ninja gumbo-parser-dev libc++-dev"
+checkdepends="gtest-dev"
+subpackages="$pkgname-static $pkgname-dev"
+source="https://github.com/litehtml/litehtml/archive/v$pkgver/litehtml-$pkgver.tar.gz
+    "
+options="!check" # so outdated it does not work
+
+build() {
+    export CPPFLAGS="${CPPFLAGS} -D_QNX_SOURCE"
+
+    cmake3.5 -B build -G Ninja \
+        -DCMAKE_CXX_COMPILER=clang++ \
+        -DCMAKE_SKIP_RPATH=ON \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DEXTERNAL_GUMBO=ON \
+        -DBUILD_SHARED_LIBS=ON \
+        -DLITEHTML_BUILD_TESTING=OFF
+    cmake3.5 -B build-static -G Ninja \
+        -DCMAKE_CXX_COMPILER=clang++ \
+        -DCMAKE_SKIP_RPATH=ON \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DEXTERNAL_GUMBO=ON \
+        -DLITEHTML_BUILD_TESTING="$(want_check && echo ON || echo OFF)"
+    cmake3.5 --build build
+    cmake3.5 --build build-static
+}
+
+check() {
+    ctest --test-dir build-static
+}
+
+package() {
+    DESTDIR="$pkgdir" cmake3.5 --install build
+    DESTDIR="$pkgdir" cmake3.5 --install build-static
+}
+
+sha512sums="
+2a156671b770a6a20ab00184d9869af779248dd1fb898930b3b479ee88d8b7d84f51fdbd689ae4124530ab70c8697b6641cf06b220631ce4fec4622e63845ea3  litehtml-0.9.tar.gz
+"
