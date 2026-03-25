@@ -3,7 +3,7 @@
 # Maintainer: Felix Xing <fxing@qnx.com>
 pkgname=litehtml
 pkgver=0.9
-pkgrel=${pkgrel:-0}
+pkgrel=0
 pkgdesc="Fast and lightweight HTML/CSS rendering engine"
 url="http://www.litehtml.com/"
 arch="all"
@@ -47,7 +47,6 @@ package() {
     DESTDIR="$pkgdir" cmake3.5 --install build-static
 }
 
-options="$options ${DISABLE_CHECK:+!check}"
 sha512sums="
 2a156671b770a6a20ab00184d9869af779248dd1fb898930b3b479ee88d8b7d84f51fdbd689ae4124530ab70c8697b6641cf06b220631ce4fec4622e63845ea3  litehtml-0.9.tar.gz
 "
